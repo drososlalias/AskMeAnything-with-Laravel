@@ -1,7 +1,10 @@
-require('./bootstrap');
 
-import Alpine from 'alpinejs';
 
-window.Alpine = Alpine;
+window.axios = require('axios');
 
-Alpine.start();
+window.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
+
+
+const app = new Vue({
+    el: '#app',
+});
