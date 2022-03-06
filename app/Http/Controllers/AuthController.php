@@ -4,7 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Session;
 
 class AuthController extends Controller
 {
@@ -18,11 +20,10 @@ class AuthController extends Controller
         $hashedPassword = bcrypt($validatedRequest['password']);
         $validatedRequest['password'] = $hashedPassword;
         $user = User::create($validatedRequest);
-        $token = $user->createToken('mysecrettoken')->plainTextToken;
 
         return response()->json([
-            "msg" => 'Successful Registration' ,
-            "token" => $token
+            "api_status" => 1,
+            "code" => 201
         ],201);
     }
 
@@ -32,20 +33,45 @@ class AuthController extends Controller
             'email' => 'required|string',
             'password' => 'required|min:5'
         ]);
-        $user = User::where('email', $validatedRequest['email'])->first();
-        if(!$user || !Hash::check($validatedRequest['password'],$user->password)){
-            return response()->json('Invalid Credentials!',401);
+        if(auth()->attempt($validatedRequest)){
+            $user = auth()->user();
+            $token = $user->createToken('mysecrettoken')->plainTextToken;
+            return response()->json([
+                'api_status' => 1,
+                'code' => 200,
+                'email' => $user->email,
+                'message' => 'Successful Login',
+                'name' => $user->name,
+                'access_token' => $token
+            ], 200);
         }
-        $token = $user->createToken('mysecrettoken')->plainTextToken;
         return response()->json([
-            'msg' => 'Successful Login',
-            'token' => $token
-        ]);
+            'error' => 'Unauthenticated user',
+            'code' => 401,
+        ], 401);
     }
 
-    public function logout() {
-        auth()->user()->tokens()->delete();
-        return response()->json('Logout successful' ,200);
+    public function logout(Request $request) {
+        Auth::logout();
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+        return response()->json([
+            'msg' => 'successful logout',
+            'api_status' => 1,
+            'code' => 200
+        ],200);
     }
 
+    public function sessionStatus()
+    {
+        if (auth()->check()) {
+            return response()->json([
+                'auth' => true,
+            ], 200);
+        } else {
+            return response()->json([
+                'auth' => false,
+            ], 200);
+        }
+    }
 }

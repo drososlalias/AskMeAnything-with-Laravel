@@ -18,13 +18,13 @@ class PostController extends Controller
 
     public function show(Post $post)
     {   
-        return $post;
+        return $post->load('comments');
     }
 
     public function store(PostRequest $request)
-    {
+    {   
         $validatedRequest = $request->validated();
-        $validatedRequest['user_id'] = 1; // TODO: authenticated user
+        $validatedRequest['user_id'] = auth()->user()->id; 
         Post::create($validatedRequest);
         return response()->json(['result' => 'successful creation']);
     }
@@ -45,8 +45,10 @@ class PostController extends Controller
     public function getSiteStatistics()
     {   
         $statistics = DB::table('posts')
-            ->select(DB::raw("DATE_FORMAT(created_at,'%Y-%d-%m') as posted_at, count(*) as total_posts"))
+            ->select(DB::raw("DATE_FORMAT(published_at,'%Y-%d-%m') as posted_at, count(*) as total_posts"))
             ->groupBy('posted_at')
+            ->orderBy('posted_at')
+            ->limit(10)
             ->get();
         return $statistics;
     }

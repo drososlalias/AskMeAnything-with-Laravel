@@ -12,7 +12,7 @@ class CommentController extends Controller
     {
         $validatedRequest = $request->validated();
         $validatedRequest['post_id'] = $post->id;
-        $validatedRequest['user_id'] = 1;
+        $validatedRequest['user_id'] = auth()->user()->id;
         Comment::create($validatedRequest);
         
         return response()->json(['result' => 'successful comment creation']);
