@@ -1,3 +1,7 @@
-@import 'tailwindcss/base';
-@import 'tailwindcss/components';
-@import 'tailwindcss/utilities';
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.comment {
+    @apply mx-auto border-2 border-white rounded-2xl w-2/3 p-2
+}
