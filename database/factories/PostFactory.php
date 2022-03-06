@@ -17,8 +17,8 @@ class PostFactory extends Factory
         return [
             'user_id' => User::factory(),
             'title' => $this->faker->text(25),
-            'text' => $this->faker->text(100),
-            'published_at' => $this->faker->date()
+            'text' => $this->faker->text(250),
+            'published_at' => $this->faker->dateTimeThisMonth()
         ];
     }
 }
