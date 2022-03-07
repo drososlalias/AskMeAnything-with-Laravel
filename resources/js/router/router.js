@@ -5,6 +5,8 @@ import Posts from '../components/Posts'
 import Post from '../components/Post'
 import Stats from '../components/Stats'
 import KeywordStats from '../components/KeywordStats'
+import Dashboard from '../components/Dashboard'
+import AddPost from '../components/AddPost'
 import Vue from 'vue'
 import VueRouter from 'vue-router'
 
@@ -44,11 +46,11 @@ const router =  new VueRouter({
                 requiresAuth: true
             }
         },
-        // {
-        //     path: '/addpost',
-        //     component: AddPost,
-        //     name: 'add-post'
-        // },
+        {
+            path: '/addpost',
+            component: AddPost,
+            name: 'add-post'
+        },
         {
             path: '/stats',
             component: Stats,
@@ -59,11 +61,14 @@ const router =  new VueRouter({
             component: KeywordStats,
             name: 'keyword-statistics'
         },
-        // {
-        //     path: '/dashboard',
-        //     component: Dashboard,
-        //     name: 'dashboard'
-        // }
+        {
+            path: '/dashboard',
+            component: Dashboard,
+            name: 'dashboard',
+            meta: {
+                requiresAuth: true
+            }
+        }
     ]
 });
 

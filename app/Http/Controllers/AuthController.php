@@ -42,7 +42,8 @@ class AuthController extends Controller
                 'email' => $user->email,
                 'message' => 'Successful Login',
                 'name' => $user->name,
-                'access_token' => $token
+                'access_token' => $token,
+                'registered_at' => $user->created_at
             ], 200);
         }
         return response()->json([
