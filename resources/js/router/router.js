@@ -49,7 +49,10 @@ const router =  new VueRouter({
         {
             path: '/addpost',
             component: AddPost,
-            name: 'add-post'
+            name: 'add-post',
+            meta: {
+                requiresAuth: true
+            }
         },
         {
             path: '/stats',

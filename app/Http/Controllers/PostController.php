@@ -12,19 +12,21 @@ class PostController extends Controller
 {
     public function index()
     {
-        $posts = Post::all();
+        $posts = Post::orderByDesc('created_at')->get();
         return $posts;
     }
 
     public function show(Post $post)
     {   
-        return $post->load('comments');
+        // return $post->load('comments');
+        return $post;
     }
 
     public function store(PostRequest $request)
     {   
         $validatedRequest = $request->validated();
         $validatedRequest['user_id'] = auth()->user()->id; 
+        $validatedRequest['published_at'] = Carbon::now();
         Post::create($validatedRequest);
         return response()->json(['result' => 'successful creation']);
     }
@@ -47,7 +49,7 @@ class PostController extends Controller
         $statistics = DB::table('posts')
             ->select(DB::raw("DATE_FORMAT(published_at,'%Y-%d-%m') as posted_at, count(*) as total_posts"))
             ->groupBy('posted_at')
-            ->orderBy('posted_at')
+            ->orderByDesc('posted_at')
             ->limit(10)
             ->get();
         return $statistics;

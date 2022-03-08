@@ -15,7 +15,7 @@
                     placeholder="Title" type="title" name="title" id="title">
                 <textarea v-model="text" class="w-full p-2 bg-gray-900 rounded-md  border border-gray-700 focus:border-blue-700"
                     placeholder="Write your post..." type="text" name="text" id="text"></textarea>
-                <input @click="submit" class="w-full p-2 bg-gray-50 rounded-full font-bold text-gray-900 border border-gray-700 "
+                <input @click="submit" value="Create" class="w-full p-2 bg-gray-50 rounded-full font-bold text-gray-900 border border-gray-700 "
                     type="submit">
             </div>
         </div>

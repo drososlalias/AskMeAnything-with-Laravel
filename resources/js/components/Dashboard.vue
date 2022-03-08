@@ -8,8 +8,8 @@
     <div class="flex flex-wrap my-5 justify-evenly">
         <MetricsCard title="Registered at" :value="registered_at"/> 
         <MetricsCard title="Total Posts" :value="totalPosts"/> 
-        <MetricsCard title="Total Comments" :value="todaysPosts"/> 
-        <MetricsCard title="Today's Posts" :value="totalComments"/> 
+        <MetricsCard title="Total Comments" :value="totalComments"/> 
+        <MetricsCard title="Today's Posts" :value="todaysPosts"/> 
         <MetricsCard title="Today's Comments" :value="todaysComments"/> 
     </div>
 </div>

@@ -7,7 +7,7 @@
             </div>
             <div class="flex-1 text-right md:text-center">
                 <h2 class="font-bold uppercase text-gray-600">{{title}}</h2>
-                <p class="font-bold text-3xl">{{value}}<span><i class="fas fa-caret-up"></i></span></p>
+                <p class="font-bold text-3xl">{{value}}<span></span></p>
             </div>
         </div>
     </div>

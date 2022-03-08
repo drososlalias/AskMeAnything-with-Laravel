@@ -14,9 +14,9 @@ class UserController extends Controller
     {   
         $userId = auth()->user()->id;
         $total_posts = Post::where('id' , $userId)->get();
-        $total_posts_today = $total_posts->where('created_at', '>=', Carbon::today());
-        $total_comments = Comment::where('id' , $userId)->get();
-        $total_comments_today = $total_comments->where('created_at', '>=', Carbon::today());
+        $total_posts_today = $total_posts->where('published_at', '>=', Carbon::today());
+        $total_comments = Comment::where('user_id' , $userId)->get();
+        $total_comments_today = $total_comments->where('commented_at', '>=', Carbon::today());
         return response()->json([
             'total_posts' => count($total_posts),
             'total_posts_today' => count($total_posts_today),

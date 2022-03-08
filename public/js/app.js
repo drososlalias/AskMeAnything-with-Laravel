@@ -2301,10 +2301,10 @@ __webpack_require__.r(__webpack_exports__);
     this.gradient.addColorStop(1, 'rgba(0, 0, 255, 0)');
     var dates = this.chartData.map(function (d) {
       return d.date;
-    });
+    }).reverse();
     var totalPosts = this.chartData.map(function (d) {
       return d.total;
-    });
+    }).reverse();
     this.renderChart({
       labels: dates,
       datasets: [{
@@ -2847,6 +2847,13 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
 /* harmony import */ var _CommentCard_vue__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./CommentCard.vue */ "./resources/js/components/CommentCard.vue");
+/* harmony import */ var vuex__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! vuex */ "./node_modules/vuex/dist/vuex.esm.js");
+function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
+
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? ownKeys(Object(source), !0).forEach(function (key) { _defineProperty(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
 //
 //
 //
@@ -2879,6 +2886,7 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 
+
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
   name: 'PostCard',
   components: {
@@ -2887,16 +2895,28 @@ __webpack_require__.r(__webpack_exports__);
   props: {
     post: Object
   },
+  computed: _objectSpread({}, (0,vuex__WEBPACK_IMPORTED_MODULE_1__.mapGetters)(['allComments'])),
   data: function data() {
     return {
-      user: "",
-      link: ""
+      loaded: false,
+      text: ""
     };
   },
-  created: function created() {
-    this.user = this.post.user.name;
-    this.link = "https://eu.ui-avatars.com/api/?name=" + this.user.split(" ")[0] + '+' + this.user.split(" ")[1];
-  }
+  mounted: function mounted() {
+    if (this.$route.name == 'post') {
+      this.fetchComments({
+        postId: this.$route.params.postId
+      });
+    }
+  },
+  methods: _objectSpread(_objectSpread({}, (0,vuex__WEBPACK_IMPORTED_MODULE_1__.mapActions)(['fetchComments'])), {}, {
+    submit: function submit() {
+      this.$store.dispatch('createComment', {
+        text: this.text,
+        postId: this.post.id
+      });
+    }
+  })
 });
 
 /***/ }),
@@ -3321,7 +3341,10 @@ var router = new vue_router__WEBPACK_IMPORTED_MODULE_10__["default"]({
   }, {
     path: '/addpost',
     component: _components_AddPost__WEBPACK_IMPORTED_MODULE_8__["default"],
-    name: 'add-post'
+    name: 'add-post',
+    meta: {
+      requiresAuth: true
+    }
   }, {
     path: '/stats',
     component: _components_Stats__WEBPACK_IMPORTED_MODULE_5__["default"],
@@ -3354,22 +3377,25 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
-/* harmony import */ var vue__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! vue */ "./node_modules/vue/dist/vue.esm.js");
-/* harmony import */ var vuex__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! vuex */ "./node_modules/vuex/dist/vuex.esm.js");
+/* harmony import */ var vue__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! vue */ "./node_modules/vue/dist/vue.esm.js");
+/* harmony import */ var vuex__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! vuex */ "./node_modules/vuex/dist/vuex.esm.js");
 /* harmony import */ var _modules_posts__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./modules/posts */ "./resources/js/store/modules/posts.js");
 /* harmony import */ var _modules_authentication__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./modules/authentication */ "./resources/js/store/modules/authentication.js");
 /* harmony import */ var _modules_dashboard__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./modules/dashboard */ "./resources/js/store/modules/dashboard.js");
+/* harmony import */ var _modules_comments__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./modules/comments */ "./resources/js/store/modules/comments.js");
 
 
 
 
 
-vue__WEBPACK_IMPORTED_MODULE_3__["default"].use(vuex__WEBPACK_IMPORTED_MODULE_4__["default"]);
-/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (new vuex__WEBPACK_IMPORTED_MODULE_4__["default"].Store({
+
+vue__WEBPACK_IMPORTED_MODULE_4__["default"].use(vuex__WEBPACK_IMPORTED_MODULE_5__["default"]);
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (new vuex__WEBPACK_IMPORTED_MODULE_5__["default"].Store({
   modules: {
     posts: _modules_posts__WEBPACK_IMPORTED_MODULE_0__["default"],
     authentication: _modules_authentication__WEBPACK_IMPORTED_MODULE_1__["default"],
-    dashboard: _modules_dashboard__WEBPACK_IMPORTED_MODULE_2__["default"]
+    dashboard: _modules_dashboard__WEBPACK_IMPORTED_MODULE_2__["default"],
+    comments: _modules_comments__WEBPACK_IMPORTED_MODULE_3__["default"]
   }
 }));
 
@@ -3585,6 +3611,125 @@ var mutations = {
   logoutUser: function logoutUser(state) {
     state.user = null;
     localStorage.removeItem("user");
+  }
+};
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
+  state: state,
+  getters: getters,
+  actions: actions,
+  mutations: mutations
+});
+
+/***/ }),
+
+/***/ "./resources/js/store/modules/comments.js":
+/*!************************************************!*\
+  !*** ./resources/js/store/modules/comments.js ***!
+  \************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/regenerator */ "./node_modules/@babel/runtime/regenerator/index.js");
+/* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! axios */ "./node_modules/axios/index.js");
+/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(axios__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var _router_router__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../router/router */ "./resources/js/router/router.js");
+
+
+function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
+
+function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
+
+
+
+var state = {
+  comments: []
+};
+var getters = {
+  allComments: function allComments(state) {
+    return state.comments;
+  }
+};
+var actions = {
+  fetchComments: function fetchComments(_ref, payload) {
+    return _asyncToGenerator( /*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default().mark(function _callee() {
+      var commit, _yield$axios$get, data;
+
+      return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default().wrap(function _callee$(_context) {
+        while (1) {
+          switch (_context.prev = _context.next) {
+            case 0:
+              commit = _ref.commit;
+              _context.prev = 1;
+              _context.next = 4;
+              return axios__WEBPACK_IMPORTED_MODULE_1___default().get("/api/comments/".concat(payload.postId));
+
+            case 4:
+              _yield$axios$get = _context.sent;
+              data = _yield$axios$get.data;
+              commit('setComments', data);
+              _context.next = 12;
+              break;
+
+            case 9:
+              _context.prev = 9;
+              _context.t0 = _context["catch"](1);
+              console.log(_context.t0);
+
+            case 12:
+            case "end":
+              return _context.stop();
+          }
+        }
+      }, _callee, null, [[1, 9]]);
+    }))();
+  },
+  createComment: function createComment(_ref2, payload) {
+    return _asyncToGenerator( /*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default().mark(function _callee2() {
+      var commit, _yield$axios$post, data;
+
+      return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default().wrap(function _callee2$(_context2) {
+        while (1) {
+          switch (_context2.prev = _context2.next) {
+            case 0:
+              commit = _ref2.commit;
+              _context2.prev = 1;
+              _context2.next = 4;
+              return axios__WEBPACK_IMPORTED_MODULE_1___default().post("/api/posts/".concat(payload.postId, "/comment"), {
+                text: payload.text
+              });
+
+            case 4:
+              _yield$axios$post = _context2.sent;
+              data = _yield$axios$post.data;
+              commit('addComment', payload.postId);
+              _context2.next = 12;
+              break;
+
+            case 9:
+              _context2.prev = 9;
+              _context2.t0 = _context2["catch"](1);
+              console.log(_context2.t0);
+
+            case 12:
+            case "end":
+              return _context2.stop();
+          }
+        }
+      }, _callee2, null, [[1, 9]]);
+    }))();
+  }
+};
+var mutations = {
+  setComments: function setComments(state, comments) {
+    return state.comments = comments;
+  },
+  addComment: function addComment(state, postId) {
+    _router_router__WEBPACK_IMPORTED_MODULE_2__["default"].go("/posts/".concat(postId));
   }
 };
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
@@ -44193,7 +44338,7 @@ var render = function () {
                 _c("input", {
                   staticClass:
                     "w-full p-2 bg-gray-50 rounded-full font-bold text-gray-900 border border-gray-700 ",
-                  attrs: { type: "submit" },
+                  attrs: { value: "Create", type: "submit" },
                   on: { click: _vm.submit },
                 }),
               ]
@@ -44353,11 +44498,11 @@ var render = function () {
           }),
           _vm._v(" "),
           _c("MetricsCard", {
-            attrs: { title: "Total Comments", value: _vm.todaysPosts },
+            attrs: { title: "Total Comments", value: _vm.totalComments },
           }),
           _vm._v(" "),
           _c("MetricsCard", {
-            attrs: { title: "Today's Posts", value: _vm.totalComments },
+            attrs: { title: "Today's Posts", value: _vm.todaysPosts },
           }),
           _vm._v(" "),
           _c("MetricsCard", {
@@ -44944,7 +45089,7 @@ var render = function () {
             _vm._v(" "),
             _c("p", { staticClass: "font-bold text-3xl" }, [
               _vm._v(_vm._s(_vm.value)),
-              _vm._m(1),
+              _c("span"),
             ]),
           ]),
         ]),
@@ -44962,12 +45107,6 @@ var staticRenderFns = [
         _c("i", { staticClass: "fas fa-tasks fa-2x fa-inverse" }),
       ]),
     ])
-  },
-  function () {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("span", [_c("i", { staticClass: "fas fa-caret-up" })])
   },
 ]
 render._withStripped = true
@@ -45043,14 +45182,16 @@ var render = function () {
                   "max-w-xs  w-full flex flex-col justify-evenly pl-4 border-r-4 border-dotted border-gray-400",
               },
               [
-                _c("img", {
-                  staticClass: "w-24 self-center rounded-full",
-                  attrs: { src: _vm.link, alt: "User Icon" },
+                _c("i", {
+                  staticClass:
+                    "fa-solid fa-user fa-2xl w-24 self-center rounded-full border-",
                 }),
                 _vm._v(" "),
-                _c("strong", { staticClass: "self-center" }, [
-                  _vm._v(_vm._s(_vm.post.user.name)),
-                ]),
+                _vm.post.user
+                  ? _c("strong", { staticClass: "self-center" }, [
+                      _vm._v(_vm._s(_vm.post.user.name)),
+                    ])
+                  : _vm._e(),
               ]
             ),
             _vm._v(" "),
@@ -45112,45 +45253,61 @@ var render = function () {
       ? _c(
           "div",
           [
-            _vm._m(0),
+            _c("div", { staticClass: "comment mt-8 mb-4" }, [
+              _c("textarea", {
+                directives: [
+                  {
+                    name: "model",
+                    rawName: "v-model",
+                    value: _vm.text,
+                    expression: "text",
+                  },
+                ],
+                staticClass: "bg-inherit pt-1 px-2 text-white outline-none",
+                attrs: {
+                  placeholder: "Leave a comment...",
+                  name: "comment",
+                  id: "comment",
+                  cols: "62",
+                  rows: "4",
+                },
+                domProps: { value: _vm.text },
+                on: {
+                  input: function ($event) {
+                    if ($event.target.composing) {
+                      return
+                    }
+                    _vm.text = $event.target.value
+                  },
+                },
+              }),
+              _vm._v(" "),
+              _c(
+                "button",
+                {
+                  staticClass:
+                    " ml-2 text-black text-lg  p-1 rounded-xl bg-white ",
+                  on: { click: _vm.submit },
+                },
+                [_vm._v("Submit")]
+              ),
+            ]),
             _vm._v(" "),
-            !_vm.post.comments
-              ? _c("div", { staticClass: "text-white text-center mt-6" }, [
-                  _vm._v("No comments yet. Start a discussion!!"),
-                ])
-              : _vm._l(_vm.post.comments, function (comment) {
-                  return _c(
-                    "div",
-                    { key: comment.id },
-                    [_c("CommentCard", { attrs: { comment: comment } })],
-                    1
-                  )
-                }),
+            _vm._l(_vm.allComments, function (comment) {
+              return _c(
+                "div",
+                { key: comment.id },
+                [_c("CommentCard", { attrs: { comment: comment } })],
+                1
+              )
+            }),
           ],
           2
         )
       : _vm._e(),
   ])
 }
-var staticRenderFns = [
-  function () {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "comment mt-8 mb-4" }, [
-      _c("textarea", {
-        staticClass: "bg-inherit pt-1 text-white",
-        attrs: {
-          placeholder: "Leave a comment...",
-          name: "comment",
-          id: "comment",
-          cols: "62",
-          rows: "4",
-        },
-      }),
-    ])
-  },
-]
+var staticRenderFns = []
 render._withStripped = true
 
 

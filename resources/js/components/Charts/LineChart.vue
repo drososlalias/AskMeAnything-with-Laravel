@@ -25,9 +25,9 @@ export default {
         this.gradient.addColorStop(0, 'rgba(0, 0,255, 0.5)')
         this.gradient.addColorStop(0.5, 'rgba(0, 0, 255, 0.25)');
         this.gradient.addColorStop(1, 'rgba(0, 0, 255, 0)');
-
-        const dates = this.chartData.map(d => d.date)
-        const totalPosts = this.chartData.map(d => d.total)
+  
+        const dates = this.chartData.map(d => d.date).reverse()
+        const totalPosts = this.chartData.map(d => d.total).reverse()
 
         this.renderChart({
             labels: dates,
